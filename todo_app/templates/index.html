@@ -12,9 +12,18 @@
       <h2>Items</h2>
       <ul class="list-group mb-4">
       {% for item in items %}
-        <li>{{item["title"]}}</li>
+        <li>{{item["title"]}} - {{item["status"]}} {% if item["status"] == "Not Started" %} - <a href="{{url_for('update', id = item['id'])}}">Complete</a> {%endif%} </li>
       {% endfor %}
       </ul>
     </div>
   </div>
+  <form action="{{url_for('Add')}}" method="POST" class="form-example">
+    <div class="form-example">
+      <label for="title">Enter New To-do Item: </label>
+      <input type="text" name="title" id="title" required>
+    </div>
+    <div class="form-example">
+      <input type="submit" value="Enter">
+    </div>
+  </form>
 {% endblock %}
