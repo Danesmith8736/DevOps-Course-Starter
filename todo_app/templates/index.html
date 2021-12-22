@@ -8,15 +8,28 @@
   </div>
 
   <div class="row">
-    <div class="col-md-12">
-      <h2>Items</h2>
-      <ul class="list-group mb-4">
-      {% for item in items %}
-        <li>{{item["title"]}} - {{item["status"]}} {% if item["status"] == "Not Started" %} - <a href="{{url_for('update', id = item['id'])}}">Complete</a> {%endif%} - <a href="{{url_for('delete', id = item['id'])}}">Delete</a></li>
-      {% endfor %}
-      </ul>
-    </div>
-  </div>
+
+  <table class="table table-striped table-dark">
+    <thead>
+      <tr>
+        <th scope="col">Task</th>
+        <th scope="col">Staus</th>
+        <th scope="col">Update</th>
+        <th scope="col">Delete</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for item in items %}
+      <tr>
+        <td>{{item["title"]}}</td>
+        <td>{{item["status"]}}</td>
+        <td>{% if item["status"] == "Not Started" %} <a href="{{url_for('update', id = item['id'])}}">Complete</a> {%endif%}</td>
+        <td><a href="{{url_for('delete', id = item['id'])}}">Delete</a></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
   <form action="{{url_for('Add')}}" method="POST" class="form-example">
     <div class="form-example">
       <label for="title">Enter New To-do Item: </label>
