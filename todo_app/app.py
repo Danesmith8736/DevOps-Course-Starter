@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 
 from todo_app.flask_config import Config
-from todo_app.data.session_items import get_items, add_item, save_item, get_item
+from todo_app.data.session_items import get_items, add_item, save_item, get_item, delete_item
 app = Flask(__name__)
 app.config.from_object(Config())
 
@@ -23,4 +23,10 @@ def update(id):
     item = get_item(id)
     item ["status"] = "Completed"
     save_item (item)
+    return redirect (url_for("index"))
+
+@app.route('/delete/<id>')
+def delete(id):
+    item = get_item(id)
+    delete_item (item)
     return redirect (url_for("index"))
