@@ -1,78 +1,175 @@
 from flask import session
+import os
+import requests
+import json
 
-_DEFAULT_ITEMS = [
-    { 'id': 1, 'status': 'Not Started', 'title': 'List saved todo items' },
-    { 'id': 2, 'status': 'Not Started', 'title': 'Allow new items to be added' }
-]
+def get_cards():
+    board_id = os.getenv ('BOARD_ID')
+    key = os.getenv ('API_KEY')
+    token = os.getenv ('API_TOKEN')
+    url = f"https://api.trello.com/1/boards/{board_id}/lists"
 
+    headers = {
+       "Accept": "application/json"
+    }
 
-def get_items():
-    """
-    Fetches all saved items from the session.
+    query = {
+        "key" : key,
+        "token" : token, 
+        "cards" : "open"
+    }
 
-    Returns:
-        list: The list of saved items.
-    """
-    return session.get('items', _DEFAULT_ITEMS.copy())
+    response = requests.get(
+       url,
+       headers=headers,
+       params = query
+    )
 
-
-def get_item(id):
-    """
-    Fetches the saved item with the specified ID.
-
-    Args:
-        id: The ID of the item.
-
-    Returns:
-        item: The saved item, or None if no items match the specified ID.
-    """
-    items = get_items()
-    return next((item for item in items if item['id'] == int(id)), None)
-
-
-def add_item(title):
-    """
-    Adds a new item with the specified title to the session.
-
-    Args:
-        title: The title of the item.
-
-    Returns:
-        item: The saved item.
-    """
-    items = get_items()
-
-    # Determine the ID for the item based on that of the previously added item
-    id = items[-1]['id'] + 1 if items else 0
-
-    item = { 'id': id, 'title': title, 'status': 'Not Started' }
-
-    # Add the item to the list
-    items.append(item)
-    session['items'] = items
-
-    return item
-
-
-def save_item(item):
-    """
-    Updates an existing item in the session. If no existing item matches the ID of the specified item, nothing is saved.
-
-    Args:
-        item: The item to save.
-    """
-    existing_items = get_items()
-    updated_items = [item if item['id'] == existing_item['id'] else existing_item for existing_item in existing_items]
-
-    session['items'] = updated_items
-
-    return item
-
-
-def delete_item(item):
-    existing_items = get_items()
-    existing_items.remove(item)
-
-    session['items'] = existing_items
     
+
+    cards = []
+    trellolists = json.loads(response.text)
+
+    for trellolist in trellolists:
+        status = trellolist ["name"]
+        for card in trellolist ["cards"]:
+            id = card ["id"]
+            title = card ["name"]
+            item = { 'id': id, 'title': title, 'status': status }
+            cards.append(item)
+    
+    return cards
+
+
+
+
+def get_lists():
+    board_id = os.getenv ('BOARD_ID')
+    key = os.getenv ('API_KEY')
+    token = os.getenv ('API_TOKEN')
+    url = f"https://api.trello.com/1/boards/{board_id}/lists"
+
+    headers = {
+       "Accept": "application/json"
+    }
+
+    query = {
+        "key" : key,
+        "token" : token, 
+        "fields" : "id,name"
+    }
+
+    response = requests.get(
+       url,
+       headers=headers,
+       params = query
+    )
+
+    return json.loads(response.text)
+
+    
+def post_add(title):
+    key = os.getenv('API_KEY')
+    token = os.getenv('API_TOKEN')
+    url = f"https://api.trello.com/1/cards"
+
+    headers = {
+       "Accept": "application/json"
+    }
+
+    query = {
+        "key" : key,
+        "token" : token, 
+        "idList" : get_lists()[0]["id"],
+        "name": title
+    }
+
+    response = requests.post(
+       url,
+       headers=headers,
+       params=query
+    )
+
+    print(json.dumps(json.loads(response.text), sort_keys=True, indent=4, separators=(",", ": ")))
+
+def get_card(id):
+    
+    items = get_cards()
+    return next((item for item in items if item['id'] == id), None)
+
+def delete_card (id):
+    existing_card = get_card(id)
+    board_id = os.getenv ('BOARD_ID')
+    key = os.getenv ('API_KEY')
+    token = os.getenv ('API_TOKEN')
+    url = f"https://api.trello.com/1/cards/{id}"
+
+    headers = {
+       "Accept": "application/json"
+    }
+
+    query = {
+        "key" : key,
+        "token" : token, 
+        "fields" : "id,name,closed"
+        
+    }
+
+    data= {
+	    "id": id,
+	    "name": existing_card ["title"],
+	    "closed": "true"
+    }
+
+    response = requests.put(
+       url,
+       headers=headers,
+       params = query,
+       data=(data)
+    )
+
+def update_status (id):
+    existing_card = get_card(id)
+    board_id = os.getenv ('BOARD_ID')
+    key = os.getenv ('API_KEY')
+    token = os.getenv ('API_TOKEN')
+    url = f"https://api.trello.com/1/cards/{id}"
+
+    headers = {
+       "Accept": "application/json"
+    }
+
+    query = {
+        "key" : key,
+        "token" : token, 
+        "fields" : "id,name,idList"
+        
+    }
+
+    trellolists = get_lists()
+    cardstatus = existing_card ["status"]
+    newidlist = ""
+    for trellolist in trellolists:
+        status = trellolist ["name"]
+        if status == cardstatus:
+            if trellolists.index(trellolist)+1 != len(trellolists):
+                newidlist=trellolists[trellolists.index(trellolist)+1] ["id"]
+                break
+            else: 
+                newidlist=trellolist["id"]
+                break        
+
+    data= {
+	    "id": id,
+	    "name": existing_card ["title"],
+	    "idList" : newidlist
+    }
+
+    response = requests.put(
+       url,
+       headers=headers,
+       params = query,
+       data=(data)
+    )
+
 
