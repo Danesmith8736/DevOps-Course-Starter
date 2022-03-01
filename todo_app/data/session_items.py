@@ -96,7 +96,6 @@ def get_card(id):
 
 def delete_card (id):
     existing_card = get_card(id)
-    board_id = os.getenv ('BOARD_ID')
     key = os.getenv ('API_KEY')
     token = os.getenv ('API_TOKEN')
     url = f"https://api.trello.com/1/cards/{id}"
