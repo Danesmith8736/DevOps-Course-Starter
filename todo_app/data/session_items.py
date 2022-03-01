@@ -2,6 +2,7 @@ from flask import session
 import os
 import requests
 import json
+from todo_app.data.Item import Item
 
 def get_cards():
     board_id = os.getenv ('BOARD_ID')
@@ -29,13 +30,9 @@ def get_cards():
 
     cards = []
     trellolists = json.loads(response.text)
-
     for trellolist in trellolists:
-        status = trellolist ["name"]
         for card in trellolist ["cards"]:
-            id = card ["id"]
-            title = card ["name"]
-            item = { 'id': id, 'title': title, 'status': status }
+            item = Item.from_trello_card(card, trellolist)
             cards.append(item)
     
     return cards
@@ -95,7 +92,7 @@ def post_add(title):
 def get_card(id):
     
     items = get_cards()
-    return next((item for item in items if item['id'] == id), None)
+    return next((item for item in items if item.id == id), None)
 
 def delete_card (id):
     existing_card = get_card(id)
@@ -117,7 +114,7 @@ def delete_card (id):
 
     data= {
 	    "id": id,
-	    "name": existing_card ["title"],
+	    "name": existing_card.name,
 	    "closed": "true"
     }
 
@@ -147,7 +144,7 @@ def update_status (id):
     }
 
     trellolists = get_lists()
-    cardstatus = existing_card ["status"]
+    cardstatus = existing_card.status
     newidlist = ""
     for trellolist in trellolists:
         status = trellolist ["name"]
@@ -161,7 +158,7 @@ def update_status (id):
 
     data= {
 	    "id": id,
-	    "name": existing_card ["title"],
+	    "name": existing_card.name,
 	    "idList" : newidlist
     }
 
