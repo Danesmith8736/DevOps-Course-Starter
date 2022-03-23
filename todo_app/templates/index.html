@@ -20,9 +20,9 @@
     <tbody>
     {% for item in items %}
       <tr>
-        <td>{{item["title"]}}</td>
+        <td>{{item["name"]}}</td>
         <td>{{item["status"]}}</td>
-        <td>{% if item["status"] == "Not Started" %} <a href="{{url_for('update', id = item['id'])}}">Complete</a> {%endif%}</td>
+        <td>{% if item["status"] != right_list%} <a href="{{url_for('update', id = item['id'])}}">Update</a>{%endif%}</td>
         <td><a href="{{url_for('delete', id = item['id'])}}">Delete</a></td>
       </tr>
     {% endfor %}
