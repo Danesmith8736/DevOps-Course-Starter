@@ -29,7 +29,7 @@ def get_cards():
     
 
     cards = []
-    trellolists = json.loads(response.text)
+    trellolists = response.json()
     for trellolist in trellolists:
         for card in trellolist ["cards"]:
             item = Item.from_trello_card(card, trellolist)
@@ -62,8 +62,8 @@ def get_lists():
        params = query
     )
 
-    return json.loads(response.text)
-
+    return response.json()
+#json.loads(response.text)#
     
 def post_add(title):
     key = os.getenv('API_KEY')
