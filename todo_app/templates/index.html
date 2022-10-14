@@ -18,14 +18,58 @@
       </tr>
     </thead>
     <tbody>
-    {% for item in items %}
+    {% for item in view_model.todo_items %}
       <tr>
         <td>{{item["name"]}}</td>
         <td>{{item["status"]}}</td>
-        <td>{% if item["status"] != right_list%} <a href="{{url_for('update', id = item['id'])}}">Update</a>{%endif%}</td>
+        <td>{% if item["status"] != view_model.right_list%} <a href="{{url_for('update', id = item['id'])}}">Update</a>{%endif%}</td>
         <td><a href="{{url_for('delete', id = item['id'])}}">Delete</a></td>
       </tr>
     {% endfor %}
+        </tbody>
+      </table>
+  </div>
+  <div class="row">
+  <table class="table table-striped table-dark">
+    <thead>
+      <tr>
+        <th scope="col">Task</th>
+        <th scope="col">Status</th>
+        <th scope="col">Update</th>
+        <th scope="col">Delete</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for item in view_model.doing_items %}
+    <tr>
+      <td>{{item["name"]}}</td>
+      <td>{{item["status"]}}</td>
+      <td>{% if item["status"] != view_model.right_list%} <a href="{{url_for('update', id = item['id'])}}">Update</a>{%endif%}</td>
+      <td><a href="{{url_for('delete', id = item['id'])}}">Delete</a></td>
+    </tr>
+  {% endfor %}
+      </tbody>
+    </table>
+  </div>
+<div class="row">
+<table class="table table-striped table-dark">
+  <thead>
+    <tr>
+      <th scope="col">Task</th>
+      <th scope="col">Status</th>
+      <th scope="col">Update</th>
+      <th scope="col">Delete</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for item in view_model.done_items %}
+  <tr>
+    <td>{{item["name"]}}</td>
+    <td>{{item["status"]}}</td>
+    <td>{% if item["status"] != view_model.right_list%} <a href="{{url_for('update', id = item['id'])}}">Update</a>{%endif%}</td>
+    <td><a href="{{url_for('delete', id = item['id'])}}">Delete</a></td>
+  </tr>
+{% endfor %}
     </tbody>
   </table>
 </div>
