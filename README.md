@@ -51,6 +51,16 @@ to run these tests:
 *Also you can run these via the command line by typing "Poetry run Pytest"  
 
 
+## Running in docker 
+
+To build the to-do app in Docker run the following two commands depending on env you wish to run
+docker build --target development --tag todo-app:dev .
+docker build --target production --tag todo-app:prod .
+
+To run the APP in Docker run either of the two commands depending on env you wish to run
+docker run --env-file ./.env -p 3500:80 --mount type=bind,source="$(pwd)"/todo_app,target=/app/todo_app todo-app:dev
+docker run --env-file ./.env -p 3500:80 --mount type=bind,source="$(pwd)"/todo_app,target=/app/todo_app todo-app:prod
+
 ## Running the App
 
 Once the all dependencies have been installed, start the Flask app in development mode within the Poetry environment by running:
