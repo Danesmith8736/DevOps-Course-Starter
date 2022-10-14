@@ -20,3 +20,5 @@ ENTRYPOINT [ "poetry", "run", "gunicorn", "--workers=2", "--bind", "0.0.0.0:80",
 FROM base as development
 ENTRYPOINT [ "poetry", "run", "flask", "run", "--host", "0.0.0.0", "--port", "80"]
 
+FROM base as test
+ENTRYPOINT [ "poetry", "run", "pytest"]
