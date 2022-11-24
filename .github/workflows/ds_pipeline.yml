@@ -38,3 +38,6 @@ jobs:
                   push: true
                   tags: danesmith1984/todo-app:latest
 
+            - run: curl -dH -X POST ${{ secrets.WEBHOOK_URL }} 
+                         
+                       
