@@ -11,20 +11,18 @@ on:
             - 'README.md'
 jobs:
     job-one:
-        build: 
             name: Build and test 
             runs-on: ubuntu-latest 
             steps: 
             - uses: actions/checkout@v2 
             - run: docker build --target test --tag todo-app:test .
             - run: docker run todo-app:test
-    job-two:
-        build: 
+    job-two: 
             name: Deploy Prod
             runs-on: ubuntu-latest
+            needs: job-one
             if: ${{ github.event_name == 'pull_request' && github.ref == 'refs/heads/main' }}
             steps: 
             - uses: actions/checkout@v2 
-            - needs: job-one
             - run: echo "Publishing!"
 
