@@ -15,7 +15,8 @@ EXPOSE 3500
 COPY /todo_app/ ./todo_app/
 
 FROM base as production
-ENTRYPOINT [ "poetry", "run", "gunicorn", "--workers=2", "--bind", "0.0.0.0:80", "todo_app.app:create_app()" ]
+##ENTRYPOINT [ "poetry", "run", "gunicorn", "--workers=2", "--bind", "0.0.0.0:80", "todo_app.app:create_app()" ]
+CMD poetry run gunicorn "todo_app.app:create_app()" --bind 0.0.0.0:$PORT 
 
 FROM base as development
 ENTRYPOINT [ "poetry", "run", "flask", "run", "--host", "0.0.0.0", "--port", "80"]
