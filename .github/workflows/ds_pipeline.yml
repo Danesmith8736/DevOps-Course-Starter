@@ -23,6 +23,7 @@ jobs:
             name: Deploy Prod
             runs-on: ubuntu-latest 
             steps: 
+            - uses: actions/checkout@v2 
             - name: first step
               if: ${{ github.event_name == 'pull_request' && github.ref == 'refs/heads/main' }}
             - needs: job-one
