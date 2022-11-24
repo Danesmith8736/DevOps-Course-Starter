@@ -9,21 +9,22 @@ on:
             - master
         paths-ignore:
             - 'README.md'
-job-one:
-    build: 
-        name: Build and test 
-        runs-on: ubuntu-latest 
-        steps: 
-        - uses: actions/checkout@v2 
-        - run: docker build --target test --tag todo-app:test .
-        - run: docker run todo-app:test
-job-two:
-    build: 
-        name: Deploy Prod
-        runs-on: ubuntu-latest 
-        steps: 
-        - name: first step
-          if: ${{ github.event_name == 'pull_request' && github.ref == 'refs/heads/main' }}
-        - needs: job-one
-        - run: echo "Publishing!"
+jobs:
+    job-one:
+        build: 
+            name: Build and test 
+            runs-on: ubuntu-latest 
+            steps: 
+            - uses: actions/checkout@v2 
+            - run: docker build --target test --tag todo-app:test .
+            - run: docker run todo-app:test
+    job-two:
+        build: 
+            name: Deploy Prod
+            runs-on: ubuntu-latest 
+            steps: 
+            - name: first step
+              if: ${{ github.event_name == 'pull_request' && github.ref == 'refs/heads/main' }}
+            - needs: job-one
+            - run: echo "Publishing!"
 
